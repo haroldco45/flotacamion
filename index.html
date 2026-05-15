@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flota Distrileco — Control de Vehículos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0d0f14;--bg2:#161923;--bg3:#1e2330;--bg4:#252b3b;
+  --card:#1a1f2e;--card2:#20263a;
+  --border:#2a3048;--border2:#3a4060;
+  --txt:#e8eaf0;--txt2:#9aa3be;--txt3:#5a6280;
+  --accent:#3b82f6;--accent2:#1d4ed8;--accent-glow:rgba(59,130,246,0.15);
+  --green:#22c55e;--green-bg:rgba(34,197,94,0.1);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.1);
+  --amber:#f59e0b;--amber-bg:rgba(245,158,11,0.1);
+  --teal:#14b8a6;--teal-bg:rgba(20,184,166,0.1);
+  --purple:#a855f7;--purple-bg:rgba(168,85,247,0.1);
+  --orange:#f97316;--orange-bg:rgba(249,115,22,0.1);
+  --radius:10px;--radius-lg:14px;--radius-xl:20px;
+  --shadow:0 4px 24px rgba(0,0,0,0.4);
+  --font:'Sora',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:34px;height:34px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-text{font-size:15px;font-weight:600;letter-spacing:-0.3px}
+.logo-sub{font-size:11px;color:var(--txt3);font-weight:400}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.badge-count{background:var(--red);color:#fff;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600}
+
+/* NAV */
+.nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;gap:2px;overflow-x:auto}
+.nav-btn{padding:12px 16px;font-size:13px;font-weight:500;color:var(--txt2);cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-family:var(--font)}
+.nav-btn:hover{color:var(--txt)}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* LAYOUT */
+.main{flex:1;padding:24px;max-width:1400px;margin:0 auto;width:100%}
+.page{display:none}
+.page.active{display:block}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
+.card-sm{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+
+/* STATS ROW */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px}
+.stat-label{font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.stat-val{font-size:26px;font-weight:700;font-family:var(--mono);line-height:1}
+.stat-sub{font-size:11px;color:var(--txt2);margin-top:4px}
+.stat-card.green .stat-val{color:var(--green)}
+.stat-card.red .stat-val{color:var(--red)}
+.stat-card.amber .stat-val{color:var(--amber)}
+.stat-card.blue .stat-val{color:var(--accent)}
+.stat-card.purple .stat-val{color:var(--purple)}
+
+/* SECTION HEADER */
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.sec-title{font-size:16px;font-weight:600}
+.sec-sub{font-size:12px;color:var(--txt3);margin-top:2px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:var(--font);transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2)}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn-ghost{background:transparent;color:var(--txt2);border:1px solid var(--border2)}
+.btn-ghost:hover{background:var(--bg4);color:var(--txt)}
+.btn-red{background:var(--red-bg);color:var(--red);border:1px solid rgba(239,68,68,0.2)}
+.btn-red:hover{background:rgba(239,68,68,0.2)}
+.btn-green{background:var(--green-bg);color:var(--green);border:1px solid rgba(34,197,94,0.2)}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--bg3);color:var(--txt3);font-size:11px;text-transform:uppercase;letter-spacing:.6px;padding:10px 14px;text-align:left;font-weight:500;white-space:nowrap}
+td{padding:11px 14px;border-top:1px solid var(--border);color:var(--txt);vertical-align:middle}
+tr:hover td{background:var(--bg4)}
+.td-mono{font-family:var(--mono);font-size:12px}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-green{background:var(--green-bg);color:var(--green)}
+.badge-red{background:var(--red-bg);color:var(--red)}
+.badge-amber{background:var(--amber-bg);color:var(--amber)}
+.badge-blue{background:var(--accent-glow);color:var(--accent)}
+.badge-teal{background:var(--teal-bg);color:var(--teal)}
+.badge-purple{background:var(--purple-bg);color:var(--purple)}
+.badge-orange{background:var(--orange-bg);color:var(--orange)}
+
+/* FORMS */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:18px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.6px;font-weight:500}
+.form-group input,.form-group select,.form-group textarea{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--txt);padding:9px 12px;font-size:13px;font-family:var(--font);transition:border .15s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent)}
+.form-group select option{background:var(--bg3)}
+.form-group textarea{resize:vertical;min-height:70px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:var(--radius-xl);width:100%;max-width:680px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card);z-index:1}
+.modal-title{font-size:16px;font-weight:600}
+.modal-body{padding:24px}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;padding:16px 24px;border-top:1px solid var(--border)}
+.btn-close{background:var(--bg4);border:none;color:var(--txt2);width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+
+/* VEHICLE CARDS */
+.veh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.veh-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-xl);padding:20px;cursor:pointer;transition:all .2s}
+.veh-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.veh-card.selected{border-color:var(--accent);background:var(--card2)}
+.veh-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.veh-icon{width:48px;height:48px;background:var(--accent-glow);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.veh-placa{font-family:var(--mono);font-size:18px;font-weight:700;letter-spacing:1px}
+.veh-nombre{font-size:12px;color:var(--txt2);margin-top:2px}
+.veh-info{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.veh-info-item{background:var(--bg3);border-radius:8px;padding:8px 10px}
+.veh-info-label{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px}
+.veh-info-val{font-size:13px;font-weight:500;margin-top:2px}
+.veh-alerts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+
+/* ALERT ITEMS */
+.alert-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--radius);border-left:3px solid}
+.alert-item.red{background:var(--red-bg);border-color:var(--red)}
+.alert-item.amber{background:var(--amber-bg);border-color:var(--amber)}
+.alert-item.green{background:var(--green-bg);border-color:var(--green)}
+.alert-icon{font-size:18px}
+.alert-text{flex:1}
+.alert-title{font-size:13px;font-weight:500}
+.alert-sub{font-size:11px;color:var(--txt2);margin-top:2px}
+
+/* PROGRESS */
+.progress-bar{background:var(--bg4);border-radius:20px;height:6px;overflow:hidden;margin-top:4px}
+.progress-fill{height:100%;border-radius:20px;transition:width .3s}
+
+/* CHARTS */
+.chart-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.chart-bar-label{font-size:12px;color:var(--txt2);min-width:70px;text-align:right}
+.chart-bar-track{flex:1;background:var(--bg4);border-radius:4px;height:22px;overflow:hidden;position:relative}
+.chart-bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:600;color:#fff;transition:width .5s}
+.chart-bar-val{font-size:12px;color:var(--txt2);min-width:90px;font-family:var(--mono)}
+
+/* TABS */
+.tabs{display:flex;gap:2px;background:var(--bg3);border-radius:10px;padding:3px;margin-bottom:18px}
+.tab{padding:7px 16px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--txt2);font-family:var(--font);transition:all .15s}
+.tab.active{background:var(--accent);color:#fff}
+
+/* DIVIDER */
+.divider{border:none;border-top:1px solid var(--border);margin:18px 0}
+
+/* SEARCH */
+.search-bar{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:8px 14px;color:var(--txt);font-size:13px;font-family:var(--font);width:100%;max-width:280px}
+.search-bar:focus{outline:none;border-color:var(--accent)}
+.search-bar::placeholder{color:var(--txt3)}
+
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:12px 24px;text-align:center;font-size:11px;color:var(--txt3)}
+
+/* TOOLTIPS/EMPTY */
+.empty-state{text-align:center;padding:48px 20px;color:var(--txt3)}
+.empty-state .empty-icon{font-size:40px;margin-bottom:12px}
+.empty-state .empty-text{font-size:14px;margin-bottom:16px}
+
+/* RESPONSIVE */
+@media(max-width:768px){.main{padding:16px}.form-grid{grid-template-columns:1fr}.veh-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">🚛</div>
+    <div>
+      <div class="logo-text">Flota Distrileco</div>
+      <div class="logo-sub">Control de Vehículos & Mantenimiento</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span id="alertCount" class="badge-count" style="display:none">0</span>
+    <button class="btn btn-ghost btn-sm" onclick="showModal('exportModal')">📊 Exportar</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button class="nav-btn active" onclick="goPage('dashboard',this)">📊 Dashboard</button>
+  <button class="nav-btn" onclick="goPage('vehiculos',this)">🚛 Vehículos</button>
+  <button class="nav-btn" onclick="goPage('conductores',this)">👤 Conductores</button>
+  <button class="nav-btn" onclick="goPage('talleres',this)">🔧 Talleres</button>
+  <button class="nav-btn" onclick="goPage('mantenimientos',this)">📋 Mantenimientos</button>
+  <button class="nav-btn" onclick="goPage('gastos',this)">💰 Gastos</button>
+  <button class="nav-btn" onclick="goPage('alertas',this)">🔔 Alertas</button>
+  <button class="nav-btn" onclick="goPage('reportes',this)">📈 Reportes</button>
+</div>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="stats-grid" id="statsGrid"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+    <div class="card">
+      <div class="sec-header"><div><div class="sec-title">Gasto por Vehículo — Mes Actual</div><div class="sec-sub" id="mesActualLabel"></div></div></div>
+      <div id="chartGastosVeh"></div>
+    </div>
+    <div class="card">
+      <div class="sec-header"><div class="sec-title">Próximos Vencimientos</div></div>
+      <div id="alertasWidget"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sec-header"><div class="sec-title">Últimos Mantenimientos</div></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Fecha</th><th>Vehículo</th><th>Tipo</th><th>Taller</th><th>Valor</th><th>Estado</th></tr></thead>
+      <tbody id="tbUltMant"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- VEHICULOS -->
+<div id="page-vehiculos" class="page">
+  <div class="sec-header">
+    <div><div class="sec-title">Flota de Vehículos</div><div class="sec-sub">Gestión completa de cada vehículo</div></div>
+    <div style="display:flex;gap:8px">
+      <input class="search-bar" placeholder="🔍 Buscar placa o nombre..." oninput="filtrarVehiculos(this.value)">
+      <button class="btn btn-primary" onclick="showModal('vehModal');editVeh=null;resetVehForm()">➕ Nuevo Vehículo</button>
+    </div>
+  </div>
+  <div class="veh-grid" id="vehGrid"></div>
+</div>
+
+<!-- CONDUCTORES -->
+<div id="page-conductores" class="page">
+  <div class="sec-header">
+    <div><div class="sec-title">Conductores</div></div>
+    <button class="btn btn-primary" onclick="showModal('condModal');editCond=null;resetCondForm()">➕ Nuevo Conductor</button>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>Licencia</th><th>Vto. Licencia</th><th>Vehículo Asignado</th><th>Estado</th><th></th></tr></thead>
+    <tbody id="tbConductores"></tbody>
+  </table></div>
+</div>
+
+<!-- TALLERES -->
+<div id="page-talleres" class="page">
+  <div class="sec-header">
+    <div><div class="sec-title">Talleres</div></div>
+    <button class="btn btn-primary" onclick="showModal('tallerModal');editTaller=null;resetTallerForm()">➕ Nuevo Taller</button>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Nombre</th><th>Tipo</th><th>Teléfono</th><th>Dirección</th><th>Servicios</th><th>Calificación</th><th></th></tr></thead>
+    <tbody id="tbTalleres"></tbody>
+  </table></div>
+</div>
+
+<!-- MANTENIMIENTOS -->
+<div id="page-mantenimientos" class="page">
+  <div class="sec-header">
+    <div><div class="sec-title">Registro de Mantenimientos</div></div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <select id="filtMantVeh" class="search-bar" style="max-width:200px" onchange="renderMantenimientos()"><option value="">Todos los vehículos</option></select>
+      <select id="filtMantTipo" class="search-bar" style="max-width:180px" onchange="renderMantenimientos()">
+        <option value="">Todos los tipos</option>
+        <option>Taller Mecánico</option><option>Taller Eléctrico</option>
+        <option>Cambio de Aceite</option><option>Lavado</option>
+        <option>Cambio de Llantas</option><option>Frenos</option>
+        <option>Revisión Técnica</option><option>Otro</option>
+      </select>
+      <button class="btn btn-primary" onclick="showModal('mantModal');editMant=null;resetMantForm()">➕ Registrar</button>
+    </div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Fecha</th><th>Vehículo</th><th>Tipo</th><th>Taller</th><th>Descripción</th><th>Repuestos</th><th>Valor</th><th>Km</th><th>Estado</th><th></th></tr></thead>
+    <tbody id="tbMantenimientos"></tbody>
+  </table></div>
+</div>
+
+<!-- GASTOS -->
+<div id="page-gastos" class="page">
+  <div class="sec-header">
+    <div><div class="sec-title">Gastos Adicionales</div><div class="sec-sub">Combustible, peajes, multas, etc.</div></div>
+    <button class="btn btn-primary" onclick="showModal('gastoModal');editGasto=null;resetGastoForm()">➕ Registrar Gasto</button>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Fecha</th><th>Vehículo</th><th>Categoría</th><th>Descripción</th><th>Valor</th><th></th></tr></thead>
+    <tbody id="tbGastos"></tbody>
+  </table></div>
+</div>
+
+<!-- ALERTAS -->
+<div id="page-alertas" class="page">
+  <div class="sec-header"><div class="sec-title">Centro de Alertas</div></div>
+  <div id="alertasLista"></div>
+</div>
+
+<!-- REPORTES -->
+<div id="page-reportes" class="page">
+  <div class="sec-header"><div class="sec-title">Reportes Mensuales</div></div>
+  <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+    <div class="form-group" style="flex-direction:row;align-items:center;gap:8px">
+      <label style="white-space:nowrap;font-size:12px;color:var(--txt2)">Mes:</label>
+      <input type="month" id="repMes" class="search-bar" style="width:160px">
+    </div>
+    <select id="repVeh" class="search-bar" style="max-width:220px"><option value="">Todos los vehículos</option></select>
+    <button class="btn btn-primary" onclick="generarReporte()">📊 Generar Reporte</button>
+  </div>
+  <div id="reporteContainer"></div>
+</div>
+
+</div><!-- /main -->
+
+<!-- FOOTER -->
+<footer>Desarrollada por Vibras Positivas HM — Derechos de Autor Reservados</footer>
+
+<!-- ============================================================ MODALES ============================================================ -->
+
+<!-- MODAL VEHÍCULO -->
+<div class="modal-overlay" id="vehModal" style="display:none" onclick="if(event.target===this)hideModal('vehModal')">
+<div class="modal">
+  <div class="modal-header">
+    <span class="modal-title">🚛 Vehículo</span>
+    <button class="btn-close" onclick="hideModal('vehModal')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="form-grid">
+      <div class="form-group"><label>Placa *</label><input id="vPlaca" placeholder="ABC123" style="text-transform:uppercase"></div>
+      <div class="form-group"><label>Nombre / Alias</label><input id="vNombre" placeholder="Ej: El Tigre"></div>
+      <div class="form-group"><label>Marca *</label><input id="vMarca" placeholder="Ej: Kenworth"></div>
+      <div class="form-group"><label>Modelo (Año)</label><input id="vModelo" type="number" placeholder="2019"></div>
+      <div class="form-group"><label>Tipo</label>
+        <select id="vTipo"><option>Camión</option><option>Camioneta</option><option>Furgón</option><option>Tractomula</option><option>Otro</option></select>
+      </div>
+      <div class="form-group"><label>Color</label><input id="vColor" placeholder="Blanco"></div>
+      <div class="form-group"><label>Capacidad (ton)</label><input id="vCapacidad" type="number" step="0.1" placeholder="5"></div>
+      <div class="form-group"><label>Kilometraje Actual</label><input id="vKm" type="number" placeholder="120000"></div>
+      <div class="form-group"><label>Km próx. cambio aceite</label><input id="vKmAceite" type="number" placeholder="125000"></div>
+    </div>
+    <hr class="divider">
+    <div class="sec-title" style="margin-bottom:14px;font-size:14px">📄 Documentos y Seguros</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Vto. SOAT</label><input id="vSoat" type="date"></div>
+      <div class="form-group"><label>Vto. Tecnicomecanica</label><input id="vTecno" type="date"></div>
+      <div class="form-group"><label>Vto. Seguro Todo Riesgo</label><input id="vSeguro" type="date"></div>
+      <div class="form-group"><label>Vto. Tarjeta de Operación</label><input id="vTarjeta" type="date"></div>
+      <div class="form-group"><label>Conductor Asignado</label><select id="vConductor"><option value="">Sin asignar</option></select></div>
+      <div class="form-group"><label>Estado</label>
+        <select id="vEstado"><option value="Activo">Activo</option><option value="En Taller">En Taller</option><option value="Inactivo">Inactivo</option></select>
+      </div>
+    </div>
+    <div class="form-group"><label>Observaciones</label><textarea id="vObs" placeholder="Notas del vehículo..."></textarea></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-ghost" onclick="hideModal('vehModal')">Cancelar</button>
+    <button class="btn btn-primary" onclick="guardarVehiculo()">💾 Guardar</button>
+  </div>
+</div></div>
+
+<!-- MODAL CONDUCTOR -->
+<div class="modal-overlay" id="condModal" style="display:none" onclick="if(event.target===this)hideModal('condModal')">
+<div class="modal">
+  <div class="modal-header"><span class="modal-title">👤 Conductor</span><button class="btn-close" onclick="hideModal('condModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid">
+      <div class="form-group"><label>Nombre Completo *</label><input id="cNombre"></div>
+      <div class="form-group"><label>Cédula *</label><input id="cCedula" type="number"></div>
+      <div class="form-group"><label>Teléfono</label><input id="cTel" type="tel"></div>
+      <div class="form-group"><label>Dirección</label><input id="cDir"></div>
+      <div class="form-group"><label>Categoría Licencia</label>
+        <select id="cLic"><option>C1</option><option>C2</option><option>C3</option><option>CE</option><option>A1</option><option>B1</option></select>
+      </div>
+      <div class="form-group"><label>Vto. Licencia</label><input id="cLicVto" type="date"></div>
+      <div class="form-group"><label>Vto. Examen Médico</label><input id="cMedico" type="date"></div>
+      <div class="form-group"><label>Vehículo Asignado</label><select id="cVeh"><option value="">Sin asignar</option></select></div>
+      <div class="form-group"><label>Estado</label>
+        <select id="cEstado"><option value="Activo">Activo</option><option value="Vacaciones">Vacaciones</option><option value="Incapacidad">Incapacidad</option><option value="Inactivo">Inactivo</option></select>
+      </div>
+    </div>
+    <div class="form-group"><label>Observaciones</label><textarea id="cObs"></textarea></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-ghost" onclick="hideModal('condModal')">Cancelar</button>
+    <button class="btn btn-primary" onclick="guardarConductor()">💾 Guardar</button>
+  </div>
+</div></div>
+
+<!-- MODAL TALLER -->
+<div class="modal-overlay" id="tallerModal" style="display:none" onclick="if(event.target===this)hideModal('tallerModal')">
+<div class="modal">
+  <div class="modal-header"><span class="modal-title">🔧 Taller</span><button class="btn-close" onclick="hideModal('tallerModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid">
+      <div class="form-group"><label>Nombre *</label><input id="tNombre"></div>
+      <div class="form-group"><label>Tipo</label>
+        <select id="tTipo"><option>Mecánico</option><option>Eléctrico</option><option>Latonería y Pintura</option><option>Llantas</option><option>Frenos</option><option>Lubricantes</option><option>Lavadero</option><option>General</option></select>
+      </div>
+      <div class="form-group"><label>Teléfono</label><input id="tTel"></div>
+      <div class="form-group"><label>Dirección</label><input id="tDir"></div>
+      <div class="form-group"><label>Contacto</label><input id="tContacto"></div>
+      <div class="form-group"><label>Calificación (1-5)</label><input id="tCal" type="number" min="1" max="5" value="3"></div>
+    </div>
+    <div class="form-group"><label>Servicios que ofrece</label><textarea id="tServicios" placeholder="Ej: Cambio de aceite, frenos, distribución..."></textarea></div>
+    <div class="form-group"><label>Observaciones</label><textarea id="tObs"></textarea></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-ghost" onclick="hideModal('tallerModal')">Cancelar</button>
+    <button class="btn btn-primary" onclick="guardarTaller()">💾 Guardar</button>
+  </div>
+</div></div>
+
+<!-- MODAL MANTENIMIENTO -->
+<div class="modal-overlay" id="mantModal" style="display:none" onclick="if(event.target===this)hideModal('mantModal')">
+<div class="modal">
+  <div class="modal-header"><span class="modal-title">📋 Mantenimiento</span><button class="btn-close" onclick="hideModal('mantModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid">
+      <div class="form-group"><label>Vehículo *</label><select id="mVeh"><option value="">Seleccionar...</option></select></div>
+      <div class="form-group"><label>Fecha *</label><input id="mFecha" type="date"></div>
+      <div class="form-group"><label>Tipo de Servicio *</label>
+        <select id="mTipo">
+          <option>Taller Mecánico</option><option>Taller Eléctrico</option>
+          <option>Cambio de Aceite</option><option>Lavado</option>
+          <option>Cambio de Llantas</option><option>Frenos</option>
+          <option>Latonería y Pintura</option><option>Revisión Técnica</option>
+          <option>Cambio de Filtros</option><option>Sistema de Enfriamiento</option>
+          <option>Caja de Cambios</option><option>Embrague</option>
+          <option>Suspensión</option><option>Otro</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Taller</label><select id="mTaller"><option value="">Seleccionar...</option></select></div>
+      <div class="form-group"><label>Km al ingreso</label><input id="mKm" type="number" placeholder="120500"></div>
+      <div class="form-group"><label>Valor Total *</label><input id="mValor" type="number" placeholder="0"></div>
+      <div class="form-group"><label>Mano de Obra</label><input id="mManoObra" type="number" placeholder="0"></div>
+      <div class="form-group"><label>Estado</label>
+        <select id="mEstado"><option>Completado</option><option>En Proceso</option><option>Pendiente</option></select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:14px"><label>Descripción del Servicio *</label><textarea id="mDesc" placeholder="Detalle del trabajo realizado..."></textarea></div>
+    <div class="form-group" style="margin-bottom:14px"><label>Repuestos Utilizados</label><textarea id="mRepuestos" placeholder="Ej: Filtro de aceite, aceite 15W40 6lt, bujías..."></textarea></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Próx. Mantenimiento (fecha)</label><input id="mProxFecha" type="date"></div>
+      <div class="form-group"><label>Próx. Mantenimiento (km)</label><input id="mProxKm" type="number" placeholder="Km estimado"></div>
+    </div>
+    <div class="form-group"><label>Observaciones</label><textarea id="mObs"></textarea></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-ghost" onclick="hideModal('mantModal')">Cancelar</button>
+    <button class="btn btn-primary" onclick="guardarMantenimiento()">💾 Guardar</button>
+  </div>
+</div></div>
+
+<!-- MODAL GASTO -->
+<div class="modal-overlay" id="gastoModal" style="display:none" onclick="if(event.target===this)hideModal('gastoModal')">
+<div class="modal">
+  <div class="modal-header"><span class="modal-title">💰 Gasto Adicional</span><button class="btn-close" onclick="hideModal('gastoModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid">
+      <div class="form-group"><label>Vehículo *</label><select id="gVeh"><option value="">Seleccionar...</option></select></div>
+      <div class="form-group"><label>Fecha *</label><input id="gFecha" type="date"></div>
+      <div class="form-group"><label>Categoría *</label>
+        <select id="gCat">
+          <option>Combustible</option><option>Peajes</option><option>Parqueadero</option>
+          <option>Multa de Tránsito</option><option>Lavado</option>
+          <option>Seguro</option><option>Impuesto Rodamiento</option>
+          <option>Documentos / Trámites</option><option>Viáticos Conductor</option><option>Otro</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Valor *</label><input id="gValor" type="number" placeholder="0"></div>
+    </div>
+    <div class="form-group" style="margin-bottom:14px"><label>Descripción</label><textarea id="gDesc" placeholder="Detalle del gasto..."></textarea></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-ghost" onclick="hideModal('gastoModal')">Cancelar</button>
+    <button class="btn btn-primary" onclick="guardarGasto()">💾 Guardar</button>
+  </div>
+</div></div>
+
+<!-- MODAL DETALLE VEHICULO -->
+<div class="modal-overlay" id="vehDetalleModal" style="display:none" onclick="if(event.target===this)hideModal('vehDetalleModal')">
+<div class="modal" style="max-width:800px">
+  <div class="modal-header"><span class="modal-title" id="vehDetalleTitle">Detalle del Vehículo</span><button class="btn-close" onclick="hideModal('vehDetalleModal')">✕</button></div>
+  <div class="modal-body" id="vehDetalleBody"></div>
+</div></div>
+
+<!-- MODAL EXPORT -->
+<div class="modal-overlay" id="exportModal" style="display:none" onclick="if(event.target===this)hideModal('exportModal')">
+<div class="modal" style="max-width:420px">
+  <div class="modal-header"><span class="modal-title">📊 Exportar Datos</span><button class="btn-close" onclick="hideModal('exportModal')">✕</button></div>
+  <div class="modal-body">
+    <p style="color:var(--txt2);font-size:13px;margin-bottom:18px">Selecciona qué información exportar como CSV:</p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-ghost" style="justify-content:flex-start" onclick="exportarCSV('vehiculos')">🚛 Exportar Vehículos</button>
+      <button class="btn btn-ghost" style="justify-content:flex-start" onclick="exportarCSV('conductores')">👤 Exportar Conductores</button>
+      <button class="btn btn-ghost" style="justify-content:flex-start" onclick="exportarCSV('mantenimientos')">📋 Exportar Mantenimientos</button>
+      <button class="btn btn-ghost" style="justify-content:flex-start" onclick="exportarCSV('gastos')">💰 Exportar Gastos</button>
+      <button class="btn btn-primary" style="justify-content:flex-start" onclick="exportarCSV('reporte')">📈 Exportar Reporte Completo</button>
+    </div>
+  </div>
+</div></div>
+
+<script>
+// ============================================================ DATA ============================================================
+const DB_KEY='distrileco_flota_v2';
+let db;
+
+function loadDB(){
+  const raw=localStorage.getItem(DB_KEY);
+  if(raw){db=JSON.parse(raw);}
+  else{
+    db={vehiculos:[],conductores:[],talleres:[],mantenimientos:[],gastos:[]};
+    // Seed data demo
+    seedDemo();
+  }
+}
+
+function saveDB(){localStorage.setItem(DB_KEY,JSON.stringify(db));}
+
+function newId(){return Date.now().toString(36)+Math.random().toString(36).substr(2,4);}
+
+function seedDemo(){
+  const vids=['v1','v2','v3'];
+  db.vehiculos=[
+    {id:'v1',placa:'DKC473',nombre:'El Toro',marca:'Kenworth',modelo:2018,tipo:'Camión',color:'Blanco',capacidad:8,km:145200,kmAceite:148000,soat:'2025-09-15',tecno:'2025-11-20',seguro:'2025-12-01',tarjeta:'2026-03-10',conductor:'c1',estado:'Activo',obs:''},
+    {id:'v2',placa:'RMT891',nombre:'El Jaguar',marca:'International',modelo:2020,tipo:'Camión',color:'Rojo',capacidad:10,km:98750,kmAceite:102000,soat:'2025-08-01',tecno:'2026-02-14',seguro:'2025-07-30',tarjeta:'2025-10-05',conductor:'c2',estado:'Activo',obs:''},
+    {id:'v3',placa:'SBL224',nombre:'La Hormiga',marca:'Chevrolet',modelo:2016,tipo:'Camioneta',color:'Gris',capacidad:2,km:210300,kmAceite:212000,soat:'2026-01-10',tecno:'2025-12-08',seguro:'2026-01-15',tarjeta:'2026-04-20',conductor:'',estado:'En Taller',obs:'Motor enviado a overhaul'}
+  ];
+  db.conductores=[
+    {id:'c1',nombre:'Carlos Alberto Pérez',cedula:'10234567',tel:'3117001234',dir:'Calle 10 #5-20 Caucasia',lic:'C2',licVto:'2026-05-15',medico:'2025-11-30',veh:'v1',estado:'Activo',obs:''},
+    {id:'c2',nombre:'Luis Fernando Ríos',cedula:'15987654',tel:'3009871234',dir:'Carrera 4 #8-15 Caucasia',lic:'C3',licVto:'2025-06-30',medico:'2025-08-20',veh:'v2',estado:'Activo',obs:''}
+  ];
+  db.talleres=[
+    {id:'t1',nombre:'Taller El Mecánico Caucasia',tipo:'Mecánico',tel:'6044441234',dir:'Av. Colombia #12-34',contacto:'Juan López',cal:4,servicios:'Motor, frenos, transmisión, suspensión',obs:''},
+    {id:'t2',nombre:'Electro Auto Bajo Cauca',tipo:'Eléctrico',tel:'6044449876',dir:'Calle 8 #3-10',contacto:'Pedro Suárez',cal:5,servicios:'Sistema eléctrico, alternadores, arranques',obs:'Excelente servicio'},
+    {id:'t3',nombre:'Lubricentro Rápido',tipo:'Lubricantes',tel:'3001112233',dir:'Diagonal 5 #2-20',contacto:'Mario García',cal:4,servicios:'Cambio de aceite, filtros, engrases',obs:''},
+    {id:'t4',nombre:'Lavadero El Brillante',tipo:'Lavadero',tel:'3004445566',dir:'Calle 12 #6-30',contacto:'Ana Martínez',cal:3,servicios:'Lavado externo, interno, motor',obs:''}
+  ];
+  const hoy=new Date();
+  const mes=hoy.getMonth();const anio=hoy.getFullYear();
+  function fd(d,m,y){const dt=new Date(y||anio,m||mes,d);return dt.toISOString().split('T')[0];}
+  db.mantenimientos=[
+    {id:'m1',veh:'v1',fecha:fd(3),tipo:'Cambio de Aceite',taller:'t3',km:144800,valor:180000,manoObra:30000,estado:'Completado',desc:'Cambio de aceite 15W40 y filtro de aceite',repuestos:'Aceite Mobil 15W40 6lt, Filtro de aceite',proxFecha:fd(3,mes+3),proxKm:148000,obs:''},
+    {id:'m2',veh:'v2',fecha:fd(5),tipo:'Taller Mecánico',taller:'t1',km:98200,valor:650000,manoObra:200000,estado:'Completado',desc:'Cambio de pastillas de freno delanteras y traseras',repuestos:'Pastillas Brembo delanteras x4, traseras x4, líquido de frenos',proxFecha:fd(5,mes+6),proxKm:108000,obs:''},
+    {id:'m3',veh:'v1',fecha:fd(8),tipo:'Lavado',taller:'t4',km:145000,valor:35000,manoObra:35000,estado:'Completado',desc:'Lavado completo externo e interno',repuestos:'',proxFecha:fd(8,mes+1),proxKm:0,obs:''},
+    {id:'m4',veh:'v3',fecha:fd(1),tipo:'Taller Mecánico',taller:'t1',km:210100,valor:2800000,manoObra:800000,estado:'En Proceso',desc:'Overhaul completo del motor',repuestos:'Kit de empaque completo, pistones, anillos, cojinetes',proxFecha:'',proxKm:220000,obs:'Esperando repuestos importados'},
+    {id:'m5',veh:'v2',fecha:fd(12),tipo:'Taller Eléctrico',taller:'t2',km:98600,valor:320000,manoObra:120000,estado:'Completado',desc:'Cambio de alternador y revisión del sistema eléctrico',repuestos:'Alternador Bosch 90A',proxFecha:'',proxKm:0,obs:''}
+  ];
+  db.gastos=[
+    {id:'g1',veh:'v1',fecha:fd(2),cat:'Combustible',desc:'Ruta Caucasia - Montería',valor:280000},
+    {id:'g2',veh:'v2',fecha:fd(4),cat:'Combustible',desc:'Ruta Caucasia - Apartadó',valor:320000},
+    {id:'g3',veh:'v1',fecha:fd(6),cat:'Peajes',desc:'Peajes ruta Medellín ida y vuelta',valor:85000},
+    {id:'g4',veh:'v2',fecha:fd(9),cat:'Peajes',desc:'Peajes ruta Córdoba',valor:45000},
+    {id:'g5',veh:'v1',fecha:fd(11),cat:'Combustible',desc:'Recarga en ruta',valor:210000},
+    {id:'g6',veh:'v3',fecha:fd(2),cat:'Documentos / Trámites',desc:'Renovación papeles vehículo',valor:95000}
+  ];
+  saveDB();
+}
+
+// ============================================================ HELPERS ============================================================
+function fmtMoney(v){return'$'+Math.round(v).toLocaleString('es-CO');}
+function fmtDate(d){if(!d)return'—';const [y,m,dd]=d.split('-');return`${dd}/${m}/${y}`;}
+function fmtDateRelative(d){
+  if(!d)return{txt:'Sin fecha',cls:'txt3',days:null};
+  const hoy=new Date();hoy.setHours(0,0,0,0);
+  const dt=new Date(d+'T00:00:00');
+  const diff=Math.round((dt-hoy)/(1000*60*60*24));
+  if(diff<0)return{txt:`Vencido hace ${Math.abs(diff)}d`,cls:'red',days:diff};
+  if(diff===0)return{txt:'Vence hoy',cls:'red',days:0};
+  if(diff<=30)return{txt:`Vence en ${diff}d`,cls:'amber',days:diff};
+  if(diff<=90)return{txt:`Vence en ${diff}d`,cls:'amber',days:diff};
+  return{txt:`${fmtDate(d)}`,cls:'green',days:diff};
+}
+function getVeh(id){return db.vehiculos.find(v=>v.id===id)||null;}
+function getCond(id){return db.conductores.find(c=>c.id===id)||null;}
+function getTaller(id){return db.talleres.find(t=>t.id===id)||null;}
+function vehName(id){const v=getVeh(id);return v?`${v.placa} ${v.nombre?'('+v.nombre+')':''}`:'—';}
+function tallerName(id){const t=getTaller(id);return t?t.nombre:'—';}
+
+function starRating(n){
+  let s='';
+  for(let i=1;i<=5;i++)s+=i<=n?'⭐':'☆';
+  return s;
+}
+
+// ============================================================ NAVIGATION ============================================================
+let editVeh=null,editCond=null,editTaller=null,editMant=null,editGasto=null;
+
+function goPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+  const renders={vehiculos:renderVehiculos,conductores:renderConductores,talleres:renderTalleres,mantenimientos:renderMantenimientos,gastos:renderGastos,alertas:renderAlertas,reportes:renderReportes,dashboard:renderDashboard};
+  if(renders[id])renders[id]();
+}
+
+function showModal(id){document.getElementById(id).style.display='flex';}
+function hideModal(id){document.getElementById(id).style.display='none';}
+
+// ============================================================ DASHBOARD ============================================================
+function renderDashboard(){
+  const hoy=new Date();
+  const mesAct=hoy.getFullYear()*100+(hoy.getMonth()+1);
+  const label=hoy.toLocaleDateString('es-CO',{month:'long',year:'numeric'});
+  document.getElementById('mesActualLabel').textContent=label;
+
+  // Stats
+  const totalVeh=db.vehiculos.length;
+  const activos=db.vehiculos.filter(v=>v.estado==='Activo').length;
+  const enTaller=db.vehiculos.filter(v=>v.estado==='En Taller').length;
+
+  // Gasto mes actual
+  const gastoMantMes=db.mantenimientos.filter(m=>{
+    if(!m.fecha)return false;
+    const d=new Date(m.fecha);const mes=(d.getFullYear()*100)+(d.getMonth()+1);
+    return mes===mesAct;
+  }).reduce((a,m)=>a+(m.valor||0),0);
+  const gastoAdMes=db.gastos.filter(g=>{
+    if(!g.fecha)return false;
+    const d=new Date(g.fecha);const mes=(d.getFullYear()*100)+(d.getMonth()+1);
+    return mes===mesAct;
+  }).reduce((a,g)=>a+(g.valor||0),0);
+  const gastoTotal=gastoMantMes+gastoAdMes;
+
+  // Alertas
+  const alertas=calcAlertas();
+  const alertasUrgentes=alertas.filter(a=>a.level==='red').length;
+  document.getElementById('alertCount').textContent=alertasUrgentes;
+  document.getElementById('alertCount').style.display=alertasUrgentes>0?'inline':'none';
+
+  document.getElementById('statsGrid').innerHTML=`
+    <div class="stat-card blue"><div class="stat-label">Total Vehículos</div><div class="stat-val">${totalVeh}</div><div class="stat-sub">${activos} activos</div></div>
+    <div class="stat-card green"><div class="stat-label">Operativos</div><div class="stat-val">${activos}</div><div class="stat-sub">En ruta</div></div>
+    <div class="stat-card amber"><div class="stat-label">En Taller</div><div class="stat-val">${enTaller}</div><div class="stat-sub">En mantenimiento</div></div>
+    <div class="stat-card red"><div class="stat-label">Alertas Urgentes</div><div class="stat-val">${alertasUrgentes}</div><div class="stat-sub">Requieren atención</div></div>
+    <div class="stat-card purple"><div class="stat-label">Gasto Mes</div><div class="stat-val" style="font-size:16px">${fmtMoney(gastoTotal)}</div><div class="stat-sub">Mant + Gastos</div></div>
+    <div class="stat-card"><div class="stat-label">Conductores Activos</div><div class="stat-val">${db.conductores.filter(c=>c.estado==='Activo').length}</div><div class="stat-sub">De ${db.conductores.length} registrados</div></div>
+  `;
+
+  // Chart gastos por vehículo
+  const gastosPorVeh={};
+  db.vehiculos.forEach(v=>gastosPorVeh[v.id]=0);
+  [...db.mantenimientos,...db.gastos].forEach(r=>{
+    if(!r.fecha)return;
+    const d=new Date(r.fecha);const mes=(d.getFullYear()*100)+(d.getMonth()+1);
+    if(mes===mesAct&&gastosPorVeh[r.veh]!==undefined)gastosPorVeh[r.veh]+=(r.valor||0);
+  });
+  const maxG=Math.max(...Object.values(gastosPorVeh),1);
+  const colors=['#3b82f6','#22c55e','#f59e0b','#ef4444','#a855f7','#14b8a6'];
+  let chartHtml='';
+  db.vehiculos.forEach((v,i)=>{
+    const pct=Math.round(gastosPorVeh[v.id]/maxG*100);
+    chartHtml+=`<div class="chart-bar-row">
+      <div class="chart-bar-label">${v.placa}</div>
+      <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%;background:${colors[i%colors.length]}">
+        ${pct>20?v.nombre||'':''}
+      </div></div>
+      <div class="chart-bar-val">${fmtMoney(gastosPorVeh[v.id])}</div>
+    </div>`;
+  });
+  if(!chartHtml)chartHtml='<div class="empty-state"><div class="empty-icon">📊</div><div>Sin datos este mes</div></div>';
+  document.getElementById('chartGastosVeh').innerHTML=chartHtml||'<div style="color:var(--txt3);font-size:13px;padding:20px 0">Sin datos este mes</div>';
+
+  // Alertas widget
+  const urg=alertas.filter(a=>a.level==='red').slice(0,5);
+  const warn=alertas.filter(a=>a.level==='amber').slice(0,3);
+  const topAlertas=[...urg,...warn].slice(0,5);
+  if(topAlertas.length===0){
+    document.getElementById('alertasWidget').innerHTML='<div class="alert-item green"><div class="alert-icon">✅</div><div class="alert-text"><div class="alert-title">Todo en orden</div></div></div>';
+  } else {
+    document.getElementById('alertasWidget').innerHTML=topAlertas.map(a=>`
+      <div class="alert-item ${a.level}" style="margin-bottom:8px">
+        <div class="alert-icon">${a.icon}</div>
+        <div class="alert-text"><div class="alert-title">${a.titulo}</div><div class="alert-sub">${a.sub}</div></div>
+      </div>`).join('');
+  }
+
+  // Últimos mantenimientos
+  const ultMant=[...db.mantenimientos].sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,6);
+  document.getElementById('tbUltMant').innerHTML=ultMant.length?ultMant.map(m=>{
+    const ec=m.estado==='Completado'?'badge-green':m.estado==='En Proceso'?'badge-amber':'badge-blue';
+    return`<tr>
+      <td class="td-mono">${fmtDate(m.fecha)}</td>
+      <td>${vehName(m.veh)}</td>
+      <td>${m.tipo}</td>
+      <td>${tallerName(m.taller)}</td>
+      <td class="td-mono">${fmtMoney(m.valor)}</td>
+      <td><span class="badge ${ec}">${m.estado}</span></td>
+    </tr>`;
+  }).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--txt3);padding:30px">Sin registros</td></tr>';
+}
+
+// ============================================================ ALERTAS ============================================================
+function calcAlertas(){
+  const alertas=[];
+  const docs=[
+    {campo:'soat',label:'SOAT'},
+    {campo:'tecno',label:'Tecnicomecanica'},
+    {campo:'seguro',label:'Seguro Todo Riesgo'},
+    {campo:'tarjeta',label:'Tarjeta de Operación'}
+  ];
+  db.vehiculos.forEach(v=>{
+    docs.forEach(d=>{
+      if(!v[d.campo])return;
+      const r=fmtDateRelative(v[d.campo]);
+      if(r.days!==null&&r.days<=60){
+        alertas.push({level:r.days<=0?'red':r.days<=30?'red':'amber',icon:r.days<=0?'🚨':'⚠️',titulo:`${d.label} — ${v.placa}${v.nombre?' ('+v.nombre+')':''}`,sub:r.txt,veh:v.id});
+      }
+    });
+    // Km aceite
+    if(v.kmAceite&&v.km>=(v.kmAceite-500)){
+      alertas.push({level:v.km>=v.kmAceite?'red':'amber',icon:'🛢️',titulo:`Cambio de Aceite — ${v.placa}`,sub:`Km actual: ${v.km.toLocaleString()} / Límite: ${v.kmAceite.toLocaleString()}`,veh:v.id});
+    }
+  });
+  // Licencias conductores
+  db.conductores.forEach(c=>{
+    if(c.licVto){
+      const r=fmtDateRelative(c.licVto);
+      if(r.days!==null&&r.days<=60){
+        alertas.push({level:r.days<=0?'red':r.days<=30?'red':'amber',icon:'🪪',titulo:`Licencia — ${c.nombre}`,sub:r.txt,cond:c.id});
+      }
+    }
+    if(c.medico){
+      const r=fmtDateRelative(c.medico);
+      if(r.days!==null&&r.days<=60){
+        alertas.push({level:r.days<=0?'red':r.days<=30?'red':'amber',icon:'🏥',titulo:`Examen Médico — ${c.nombre}`,sub:r.txt,cond:c.id});
+      }
+    }
+  });
+  return alertas;
+}
+
+function renderAlertas(){
+  const alertas=calcAlertas();
+  const rojas=alertas.filter(a=>a.level==='red');
+  const ambar=alertas.filter(a=>a.level==='amber');
+  let html='';
+  if(rojas.length){
+    html+=`<div class="sec-title" style="color:var(--red);margin-bottom:12px">🚨 Urgentes (${rojas.length})</div>`;
+    html+=rojas.map(a=>`<div class="alert-item red" style="margin-bottom:8px"><div class="alert-icon">${a.icon}</div><div class="alert-text"><div class="alert-title">${a.titulo}</div><div class="alert-sub">${a.sub}</div></div></div>`).join('');
+    html+='<hr class="divider">';
+  }
+  if(ambar.length){
+    html+=`<div class="sec-title" style="color:var(--amber);margin-bottom:12px">⚠️ Próximos Vencimientos (${ambar.length})</div>`;
+    html+=ambar.map(a=>`<div class="alert-item amber" style="margin-bottom:8px"><div class="alert-icon">${a.icon}</div><div class="alert-text"><div class="alert-title">${a.titulo}</div><div class="alert-sub">${a.sub}</div></div></div>`).join('');
+  }
+  if(!alertas.length){html='<div class="alert-item green"><div class="alert-icon">✅</div><div class="alert-text"><div class="alert-title">Sin alertas — Todo al día</div></div></div>';}
+  document.getElementById('alertasLista').innerHTML=html;
+}
+
+// ============================================================ VEHÍCULOS ============================================================
+function renderVehiculos(filter=''){
+  const list=filter?db.vehiculos.filter(v=>
+    v.placa.toLowerCase().includes(filter.toLowerCase())||
+    (v.nombre||'').toLowerCase().includes(filter.toLowerCase())
+  ):db.vehiculos;
+
+  if(!list.length){
+    document.getElementById('vehGrid').innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🚛</div><div class="empty-text">No hay vehículos registrados</div><button class="btn btn-primary" onclick="showModal(\'vehModal\');resetVehForm()">➕ Agregar Primer Vehículo</button></div>';
+    return;
+  }
+  const colors={Activo:'green','En Taller':'amber',Inactivo:'red'};
+  document.getElementById('vehGrid').innerHTML=list.map(v=>{
+    const alerts=calcAlertas().filter(a=>a.veh===v.id);
+    const alertHtml=alerts.slice(0,3).map(a=>`<span class="badge badge-${a.level==='red'?'red':'amber'}">${a.icon} ${a.titulo.split('—')[0].trim()}</span>`).join('');
+    const condNom=getCond(v.conductor);
+    return`<div class="veh-card" onclick="verDetalleVeh('${v.id}')">
+      <div class="veh-top">
+        <div>
+          <div class="veh-placa">${v.placa}</div>
+          <div class="veh-nombre">${v.nombre||''} · ${v.marca} ${v.modelo}</div>
+        </div>
+        <div style="text-align:right">
+          <span class="badge badge-${colors[v.estado]||'blue'}">${v.estado}</span>
+          <div style="margin-top:6px;display:flex;gap:4px">
+            <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();abrirEditVeh('${v.id}')">✏️</button>
+            <button class="btn btn-red btn-sm" onclick="event.stopPropagation();eliminarVeh('${v.id}')">🗑️</button>
+          </div>
+        </div>
+      </div>
+      <div class="veh-info">
+        <div class="veh-info-item"><div class="veh-info-label">Tipo</div><div class="veh-info-val">${v.tipo}</div></div>
+        <div class="veh-info-item"><div class="veh-info-label">Capacidad</div><div class="veh-info-val">${v.capacidad} ton</div></div>
+        <div class="veh-info-item"><div class="veh-info-label">Km Actual</div><div class="veh-info-val">${(v.km||0).toLocaleString()}</div></div>
+        <div class="veh-info-item"><div class="veh-info-label">Conductor</div><div class="veh-info-val" style="font-size:11px">${condNom?condNom.nombre.split(' ')[0]:'Sin asignar'}</div></div>
+      </div>
+      ${alertHtml?`<div class="veh-alerts" style="margin-top:10px">${alertHtml}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function filtrarVehiculos(v){renderVehiculos(v);}
+
+function resetVehForm(){
+  ['vPlaca','vNombre','vMarca','vColor','vObs'].forEach(id=>document.getElementById(id).value='');
+  ['vModelo','vKm','vKmAceite','vCapacidad'].forEach(id=>document.getElementById(id).value='');
+  ['vSoat','vTecno','vSeguro','vTarjeta'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('vTipo').value='Camión';
+  document.getElementById('vEstado').value='Activo';
+  poblarSelectConductoresVeh();
+}
+
+function poblarSelectConductoresVeh(){
+  const sel=document.getElementById('vConductor');
+  sel.innerHTML='<option value="">Sin asignar</option>'+db.conductores.map(c=>`<option value="${c.id}">${c.nombre}</option>`).join('');
+}
+
+function abrirEditVeh(id){
+  editVeh=id;const v=getVeh(id);if(!v)return;
+  poblarSelectConductoresVeh();
+  document.getElementById('vPlaca').value=v.placa;
+  document.getElementById('vNombre').value=v.nombre||'';
+  document.getElementById('vMarca').value=v.marca||'';
+  document.getElementById('vModelo').value=v.modelo||'';
+  document.getElementById('vTipo').value=v.tipo||'Camión';
+  document.getElementById('vColor').value=v.color||'';
+  document.getElementById('vCapacidad').value=v.capacidad||'';
+  document.getElementById('vKm').value=v.km||'';
+  document.getElementById('vKmAceite').value=v.kmAceite||'';
+  document.getElementById('vSoat').value=v.soat||'';
+  document.getElementById('vTecno').value=v.tecno||'';
+  document.getElementById('vSeguro').value=v.seguro||'';
+  document.getElementById('vTarjeta').value=v.tarjeta||'';
+  document.getElementById('vConductor').value=v.conductor||'';
+  document.getElementById('vEstado').value=v.estado||'Activo';
+  document.getElementById('vObs').value=v.obs||'';
+  showModal('vehModal');
+}
+
+function guardarVehiculo(){
+  const placa=document.getElementById('vPlaca').value.trim().toUpperCase();
+  const marca=document.getElementById('vMarca').value.trim();
+  if(!placa||!marca){alert('Placa y marca son obligatorios');return;}
+  const obj={
+    placa,nombre:document.getElementById('vNombre').value.trim(),
+    marca,modelo:parseInt(document.getElementById('vModelo').value)||0,
+    tipo:document.getElementById('vTipo').value,
+    color:document.getElementById('vColor').value.trim(),
+    capacidad:parseFloat(document.getElementById('vCapacidad').value)||0,
+    km:parseInt(document.getElementById('vKm').value)||0,
+    kmAceite:parseInt(document.getElementById('vKmAceite').value)||0,
+    soat:document.getElementById('vSoat').value,
+    tecno:document.getElementById('vTecno').value,
+    seguro:document.getElementById('vSeguro').value,
+    tarjeta:document.getElementById('vTarjeta').value,
+    conductor:document.getElementById('vConductor').value,
+    estado:document.getElementById('vEstado').value,
+    obs:document.getElementById('vObs').value.trim()
+  };
+  if(editVeh){Object.assign(getVeh(editVeh),obj);}
+  else{obj.id=newId();db.vehiculos.push(obj);}
+  saveDB();hideModal('vehModal');renderVehiculos();
+}
+
+function eliminarVeh(id){
+  if(!confirm('¿Eliminar este vehículo?'))return;
+  db.vehiculos=db.vehiculos.filter(v=>v.id!==id);saveDB();renderVehiculos();
+}
+
+function verDetalleVeh(id){
+  const v=getVeh(id);if(!v)return;
+  document.getElementById('vehDetalleTitle').textContent=`🚛 ${v.placa} ${v.nombre?'- '+v.nombre:''}`;
+  const mants=db.mantenimientos.filter(m=>m.veh===id).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const gastos=db.gastos.filter(g=>g.veh===id).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const totalMant=mants.reduce((a,m)=>a+m.valor,0);
+  const totalGastos=gastos.reduce((a,g)=>a+g.valor,0);
+  const cond=getCond(v.conductor);
+
+  // Docs
+  const docs=[
+    {label:'SOAT',val:v.soat},{label:'Tecnicomecanica',val:v.tecno},
+    {label:'Seguro Todo Riesgo',val:v.seguro},{label:'Tarjeta de Operación',val:v.tarjeta}
+  ];
+
+  // Repuestos frecuentes
+  const repCont={};
+  mants.forEach(m=>{if(m.repuestos)m.repuestos.split(',').forEach(r=>{const k=r.trim();if(k){repCont[k]=(repCont[k]||0)+1;}})});
+  const repTop=Object.entries(repCont).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  document.getElementById('vehDetalleBody').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px">
+      <div class="stat-card blue"><div class="stat-label">Total Invertido</div><div class="stat-val" style="font-size:16px">${fmtMoney(totalMant+totalGastos)}</div></div>
+      <div class="stat-card amber"><div class="stat-label">Mantenimientos</div><div class="stat-val">${mants.length}</div><div class="stat-sub">${fmtMoney(totalMant)}</div></div>
+      <div class="stat-card purple"><div class="stat-label">Otros Gastos</div><div class="stat-val">${gastos.length}</div><div class="stat-sub">${fmtMoney(totalGastos)}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px">
+      <div class="card-sm">
+        <div class="sec-title" style="font-size:13px;margin-bottom:10px">📄 Documentos</div>
+        ${docs.map(d=>{const r=fmtDateRelative(d.val);return`<div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px"><span style="color:var(--txt2)">${d.label}</span><span style="color:var(--${r.cls==='green'?'green':r.cls==='amber'?'amber':'red'})">${r.txt}</span></div>`;}).join('')}
+      </div>
+      <div class="card-sm">
+        <div class="sec-title" style="font-size:13px;margin-bottom:10px">👤 Conductor</div>
+        ${cond?`<div style="font-size:13px;font-weight:500">${cond.nombre}</div>
+          <div style="font-size:11px;color:var(--txt3);margin-top:4px">Lic. ${cond.lic} · Vto: ${fmtDate(cond.licVto)}</div>
+          <div style="font-size:11px;color:var(--txt3)">Tel: ${cond.tel}</div>`
+        :'<div style="font-size:12px;color:var(--txt3)">Sin conductor asignado</div>'}
+      </div>
+    </div>
+    ${repTop.length?`<div class="card-sm" style="margin-bottom:18px">
+      <div class="sec-title" style="font-size:13px;margin-bottom:10px">🔩 Repuestos Más Usados</div>
+      ${repTop.map(([r,c])=>`<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span>${r}</span><span class="badge badge-blue">${c}x</span></div>`).join('')}
+    </div>`:''}
+    <div class="sec-title" style="font-size:13px;margin-bottom:10px">📋 Historial de Mantenimientos</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Fecha</th><th>Tipo</th><th>Taller</th><th>Valor</th><th>Estado</th></tr></thead>
+      <tbody>${mants.length?mants.map(m=>`<tr>
+        <td class="td-mono">${fmtDate(m.fecha)}</td><td>${m.tipo}</td>
+        <td>${tallerName(m.taller)}</td>
+        <td class="td-mono">${fmtMoney(m.valor)}</td>
+        <td><span class="badge badge-${m.estado==='Completado'?'green':m.estado==='En Proceso'?'amber':'blue'}">${m.estado}</span></td>
+      </tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:var(--txt3);padding:20px">Sin mantenimientos</td></tr>'}</tbody>
+    </table></div>
+  `;
+  showModal('vehDetalleModal');
+}
+
+// ============================================================ CONDUCTORES ============================================================
+function renderConductores(){
+  poblarSelectVehiculos('cVeh');
+  const tbody=document.getElementById('tbConductores');
+  if(!db.conductores.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--txt3);padding:30px">Sin conductores registrados</td></tr>';return;}
+  tbody.innerHTML=db.conductores.map(c=>{
+    const veh=getVeh(c.veh);
+    const licR=fmtDateRelative(c.licVto);
+    const ec=c.estado==='Activo'?'badge-green':c.estado==='Vacaciones'?'badge-teal':'badge-red';
+    return`<tr>
+      <td><div style="font-weight:500">${c.nombre}</div></td>
+      <td class="td-mono">${c.cedula}</td>
+      <td>${c.tel}</td>
+      <td><span class="badge badge-blue">${c.lic}</span></td>
+      <td><span style="color:var(--${licR.cls==='green'?'green':licR.cls==='amber'?'amber':'red'})">${fmtDate(c.licVto)}</span></td>
+      <td>${veh?`${veh.placa} ${veh.nombre?'('+veh.nombre+')':''}`:'<span style="color:var(--txt3)">Sin asignar</span>'}</td>
+      <td><span class="badge ${ec}">${c.estado}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="abrirEditCond('${c.id}')">✏️</button>
+        <button class="btn btn-red btn-sm" onclick="eliminarCond('${c.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function resetCondForm(){
+  ['cNombre','cCedula','cTel','cDir','cObs'].forEach(id=>document.getElementById(id).value='');
+  ['cLicVto','cMedico'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('cLic').value='C2';document.getElementById('cEstado').value='Activo';
+  poblarSelectVehiculos('cVeh');
+}
+
+function abrirEditCond(id){
+  editCond=id;const c=getCond(id);if(!c)return;
+  poblarSelectVehiculos('cVeh');
+  document.getElementById('cNombre').value=c.nombre;document.getElementById('cCedula').value=c.cedula;
+  document.getElementById('cTel').value=c.tel;document.getElementById('cDir').value=c.dir||'';
+  document.getElementById('cLic').value=c.lic;document.getElementById('cLicVto').value=c.licVto||'';
+  document.getElementById('cMedico').value=c.medico||'';document.getElementById('cVeh').value=c.veh||'';
+  document.getElementById('cEstado').value=c.estado;document.getElementById('cObs').value=c.obs||'';
+  showModal('condModal');
+}
+
+function guardarConductor(){
+  const nom=document.getElementById('cNombre').value.trim();
+  const ced=document.getElementById('cCedula').value.trim();
+  if(!nom||!ced){alert('Nombre y cédula son obligatorios');return;}
+  const obj={nombre:nom,cedula:ced,tel:document.getElementById('cTel').value.trim(),
+    dir:document.getElementById('cDir').value.trim(),lic:document.getElementById('cLic').value,
+    licVto:document.getElementById('cLicVto').value,medico:document.getElementById('cMedico').value,
+    veh:document.getElementById('cVeh').value,estado:document.getElementById('cEstado').value,
+    obs:document.getElementById('cObs').value.trim()};
+  if(editCond){Object.assign(getCond(editCond),obj);}
+  else{obj.id=newId();db.conductores.push(obj);}
+  saveDB();hideModal('condModal');renderConductores();
+}
+
+function eliminarCond(id){
+  if(!confirm('¿Eliminar este conductor?'))return;
+  db.conductores=db.conductores.filter(c=>c.id!==id);saveDB();renderConductores();
+}
+
+// ============================================================ TALLERES ============================================================
+function renderTalleres(){
+  const tbody=document.getElementById('tbTalleres');
+  if(!db.talleres.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--txt3);padding:30px">Sin talleres registrados</td></tr>';return;}
+  const tipoColor={Mecánico:'badge-blue',Eléctrico:'badge-amber','Latonería y Pintura':'badge-purple',Llantas:'badge-teal',Frenos:'badge-red',Lubricantes:'badge-orange',Lavadero:'badge-green',General:'badge-blue'};
+  tbody.innerHTML=db.talleres.map(t=>`<tr>
+    <td><div style="font-weight:500">${t.nombre}</div><div style="font-size:11px;color:var(--txt3)">${t.contacto||''}</div></td>
+    <td><span class="badge ${tipoColor[t.tipo]||'badge-blue'}">${t.tipo}</span></td>
+    <td>${t.tel}</td>
+    <td style="font-size:12px">${t.dir}</td>
+    <td style="font-size:11px;color:var(--txt2);max-width:180px">${t.servicios||'—'}</td>
+    <td>${starRating(t.cal||0)}</td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-ghost btn-sm" onclick="abrirEditTaller('${t.id}')">✏️</button>
+      <button class="btn btn-red btn-sm" onclick="eliminarTaller('${t.id}')">🗑️</button>
+    </td>
+  </tr>`).join('');
+}
+
+function resetTallerForm(){
+  ['tNombre','tTel','tDir','tContacto','tServicios','tObs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('tTipo').value='Mecánico';document.getElementById('tCal').value=3;
+}
+
+function abrirEditTaller(id){
+  editTaller=id;const t=getTaller(id);if(!t)return;
+  document.getElementById('tNombre').value=t.nombre;document.getElementById('tTipo').value=t.tipo;
+  document.getElementById('tTel').value=t.tel;document.getElementById('tDir').value=t.dir;
+  document.getElementById('tContacto').value=t.contacto||'';document.getElementById('tCal').value=t.cal||3;
+  document.getElementById('tServicios').value=t.servicios||'';document.getElementById('tObs').value=t.obs||'';
+  showModal('tallerModal');
+}
+
+function guardarTaller(){
+  const nom=document.getElementById('tNombre').value.trim();
+  if(!nom){alert('El nombre es obligatorio');return;}
+  const obj={nombre:nom,tipo:document.getElementById('tTipo').value,tel:document.getElementById('tTel').value.trim(),
+    dir:document.getElementById('tDir').value.trim(),contacto:document.getElementById('tContacto').value.trim(),
+    cal:parseInt(document.getElementById('tCal').value)||3,servicios:document.getElementById('tServicios').value.trim(),
+    obs:document.getElementById('tObs').value.trim()};
+  if(editTaller){Object.assign(getTaller(editTaller),obj);}
+  else{obj.id=newId();db.talleres.push(obj);}
+  saveDB();hideModal('tallerModal');renderTalleres();
+}
+
+function eliminarTaller(id){
+  if(!confirm('¿Eliminar este taller?'))return;
+  db.talleres=db.talleres.filter(t=>t.id!==id);saveDB();renderTalleres();
+}
+
+// ============================================================ MANTENIMIENTOS ============================================================
+function renderMantenimientos(){
+  poblarSelectVehiculos('mVeh');poblarSelectVehiculos('filtMantVeh',true);poblarSelectTalleres('mTaller');
+  const filtVeh=document.getElementById('filtMantVeh').value;
+  const filtTipo=document.getElementById('filtMantTipo').value;
+  let list=[...db.mantenimientos].sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  if(filtVeh)list=list.filter(m=>m.veh===filtVeh);
+  if(filtTipo)list=list.filter(m=>m.tipo===filtTipo);
+  const tbody=document.getElementById('tbMantenimientos');
+  if(!list.length){tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--txt3);padding:30px">Sin registros</td></tr>';return;}
+  tbody.innerHTML=list.map(m=>{
+    const ec=m.estado==='Completado'?'badge-green':m.estado==='En Proceso'?'badge-amber':'badge-blue';
+    return`<tr>
+      <td class="td-mono">${fmtDate(m.fecha)}</td>
+      <td><span style="font-family:var(--mono);font-weight:600">${(getVeh(m.veh)||{}).placa||'—'}</span></td>
+      <td>${m.tipo}</td>
+      <td style="font-size:12px">${tallerName(m.taller)}</td>
+      <td style="font-size:12px;max-width:200px">${m.desc}</td>
+      <td style="font-size:11px;color:var(--txt2);max-width:150px">${m.repuestos||'—'}</td>
+      <td class="td-mono" style="color:var(--amber)">${fmtMoney(m.valor)}</td>
+      <td class="td-mono">${m.km?(m.km).toLocaleString():'—'}</td>
+      <td><span class="badge ${ec}">${m.estado}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="abrirEditMant('${m.id}')">✏️</button>
+        <button class="btn btn-red btn-sm" onclick="eliminarMant('${m.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function resetMantForm(){
+  poblarSelectVehiculos('mVeh');poblarSelectTalleres('mTaller');
+  ['mDesc','mRepuestos','mObs'].forEach(id=>document.getElementById(id).value='');
+  ['mKm','mValor','mManoObra','mProxKm'].forEach(id=>document.getElementById(id).value='');
+  ['mFecha','mProxFecha'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mFecha').value=new Date().toISOString().split('T')[0];
+  document.getElementById('mTipo').value='Taller Mecánico';
+  document.getElementById('mEstado').value='Completado';
+}
+
+function abrirEditMant(id){
+  editMant=id;const m=db.mantenimientos.find(x=>x.id===id);if(!m)return;
+  poblarSelectVehiculos('mVeh');poblarSelectTalleres('mTaller');
+  document.getElementById('mVeh').value=m.veh;document.getElementById('mFecha').value=m.fecha;
+  document.getElementById('mTipo').value=m.tipo;document.getElementById('mTaller').value=m.taller||'';
+  document.getElementById('mKm').value=m.km||'';document.getElementById('mValor').value=m.valor||'';
+  document.getElementById('mManoObra').value=m.manoObra||'';document.getElementById('mEstado').value=m.estado;
+  document.getElementById('mDesc').value=m.desc;document.getElementById('mRepuestos').value=m.repuestos||'';
+  document.getElementById('mProxFecha').value=m.proxFecha||'';document.getElementById('mProxKm').value=m.proxKm||'';
+  document.getElementById('mObs').value=m.obs||'';
+  showModal('mantModal');
+}
+
+function guardarMantenimiento(){
+  const veh=document.getElementById('mVeh').value;
+  const fecha=document.getElementById('mFecha').value;
+  const desc=document.getElementById('mDesc').value.trim();
+  const valor=parseFloat(document.getElementById('mValor').value)||0;
+  if(!veh||!fecha||!desc){alert('Vehículo, fecha y descripción son obligatorios');return;}
+  const obj={veh,fecha,tipo:document.getElementById('mTipo').value,
+    taller:document.getElementById('mTaller').value,
+    km:parseInt(document.getElementById('mKm').value)||0,
+    valor,manoObra:parseFloat(document.getElementById('mManoObra').value)||0,
+    estado:document.getElementById('mEstado').value,desc,
+    repuestos:document.getElementById('mRepuestos').value.trim(),
+    proxFecha:document.getElementById('mProxFecha').value,
+    proxKm:parseInt(document.getElementById('mProxKm').value)||0,
+    obs:document.getElementById('mObs').value.trim()};
+  // Update km on vehicle
+  const v=getVeh(veh);if(v&&obj.km>v.km)v.km=obj.km;
+  if(editMant){const idx=db.mantenimientos.findIndex(m=>m.id===editMant);db.mantenimientos[idx]=Object.assign({id:editMant},obj);}
+  else{obj.id=newId();db.mantenimientos.push(obj);}
+  saveDB();hideModal('mantModal');renderMantenimientos();
+}
+
+function eliminarMant(id){
+  if(!confirm('¿Eliminar este mantenimiento?'))return;
+  db.mantenimientos=db.mantenimientos.filter(m=>m.id!==id);saveDB();renderMantenimientos();
+}
+
+// ============================================================ GASTOS ============================================================
+function renderGastos(){
+  poblarSelectVehiculos('gVeh');
+  const list=[...db.gastos].sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const tbody=document.getElementById('tbGastos');
+  if(!list.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--txt3);padding:30px">Sin gastos registrados</td></tr>';return;}
+  const catColor={Combustible:'badge-orange',Peajes:'badge-teal',Parqueadero:'badge-blue','Multa de Tránsito':'badge-red',Lavado:'badge-green',Seguro:'badge-purple','Impuesto Rodamiento':'badge-amber','Documentos / Trámites':'badge-blue','Viáticos Conductor':'badge-teal',Otro:'badge-blue'};
+  tbody.innerHTML=list.map(g=>`<tr>
+    <td class="td-mono">${fmtDate(g.fecha)}</td>
+    <td><span style="font-family:var(--mono);font-weight:600">${(getVeh(g.veh)||{}).placa||'—'}</span></td>
+    <td><span class="badge ${catColor[g.cat]||'badge-blue'}">${g.cat}</span></td>
+    <td style="font-size:12px">${g.desc||'—'}</td>
+    <td class="td-mono" style="color:var(--amber)">${fmtMoney(g.valor)}</td>
+    <td>
+      <button class="btn btn-ghost btn-sm" onclick="abrirEditGasto('${g.id}')">✏️</button>
+      <button class="btn btn-red btn-sm" onclick="eliminarGasto('${g.id}')">🗑️</button>
+    </td>
+  </tr>`).join('');
+}
+
+function resetGastoForm(){
+  poblarSelectVehiculos('gVeh');
+  ['gDesc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('gValor').value='';
+  document.getElementById('gFecha').value=new Date().toISOString().split('T')[0];
+  document.getElementById('gCat').value='Combustible';
+}
+
+function abrirEditGasto(id){
+  editGasto=id;const g=db.gastos.find(x=>x.id===id);if(!g)return;
+  poblarSelectVehiculos('gVeh');
+  document.getElementById('gVeh').value=g.veh;document.getElementById('gFecha').value=g.fecha;
+  document.getElementById('gCat').value=g.cat;document.getElementById('gValor').value=g.valor;
+  document.getElementById('gDesc').value=g.desc||'';
+  showModal('gastoModal');
+}
+
+function guardarGasto(){
+  const veh=document.getElementById('gVeh').value;
+  const fecha=document.getElementById('gFecha').value;
+  const valor=parseFloat(document.getElementById('gValor').value)||0;
+  if(!veh||!fecha||!valor){alert('Vehículo, fecha y valor son obligatorios');return;}
+  const obj={veh,fecha,cat:document.getElementById('gCat').value,valor,desc:document.getElementById('gDesc').value.trim()};
+  if(editGasto){const idx=db.gastos.findIndex(g=>g.id===editGasto);db.gastos[idx]=Object.assign({id:editGasto},obj);}
+  else{obj.id=newId();db.gastos.push(obj);}
+  saveDB();hideModal('gastoModal');renderGastos();
+}
+
+function eliminarGasto(id){
+  if(!confirm('¿Eliminar este gasto?'))return;
+  db.gastos=db.gastos.filter(g=>g.id!==id);saveDB();renderGastos();
+}
+
+// ============================================================ REPORTES ============================================================
+function renderReportes(){
+  poblarSelectVehiculos('repVeh',true);
+  const hoy=new Date();
+  document.getElementById('repMes').value=`${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}`;
+  generarReporte();
+}
+
+function generarReporte(){
+  const mesVal=document.getElementById('repMes').value;
+  const repVeh=document.getElementById('repVeh').value;
+  if(!mesVal){document.getElementById('reporteContainer').innerHTML='<div style="color:var(--txt3)">Selecciona un mes</div>';return;}
+  const [y,m]=mesVal.split('-');
+  const mesNum=parseInt(y)*100+parseInt(m);
+  const mesLabel=new Date(parseInt(y),parseInt(m)-1,1).toLocaleDateString('es-CO',{month:'long',year:'numeric'});
+
+  const filtVehs=repVeh?db.vehiculos.filter(v=>v.id===repVeh):db.vehiculos;
+
+  let totalGeneral=0;
+  let htmlVehs='';
+
+  filtVehs.forEach(v=>{
+    const mants=db.mantenimientos.filter(m=>{
+      if(m.veh!==v.id||!m.fecha)return false;
+      const d=new Date(m.fecha);return(d.getFullYear()*100+(d.getMonth()+1))===mesNum;
+    });
+    const gastos=db.gastos.filter(g=>{
+      if(g.veh!==v.id||!g.fecha)return false;
+      const d=new Date(g.fecha);return(d.getFullYear()*100+(d.getMonth()+1))===mesNum;
+    });
+    const totalMant=mants.reduce((a,m)=>a+m.valor,0);
+    const totalGas=gastos.reduce((a,g)=>a+g.valor,0);
+    const total=totalMant+totalGas;
+    totalGeneral+=total;
+    if(!mants.length&&!gastos.length)return;
+
+    // Gastos por categoría
+    const catResumen={};
+    gastos.forEach(g=>{catResumen[g.cat]=(catResumen[g.cat]||0)+g.valor;});
+
+    // Tipo mantenimiento
+    const tipoResumen={};
+    mants.forEach(m=>{tipoResumen[m.tipo]=(tipoResumen[m.tipo]||0)+m.valor;});
+
+    htmlVehs+=`<div class="card" style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div><div style="font-size:17px;font-weight:700;font-family:var(--mono)">${v.placa}</div>
+        <div style="font-size:12px;color:var(--txt2)">${v.nombre||''} · ${v.marca} ${v.modelo}</div></div>
+        <div style="text-align:right">
+          <div style="font-size:20px;font-weight:700;color:var(--amber);font-family:var(--mono)">${fmtMoney(total)}</div>
+          <div style="font-size:11px;color:var(--txt3)">gasto total del mes</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+        <div class="stat-card amber"><div class="stat-label">Mantenimientos</div><div class="stat-val" style="font-size:15px">${fmtMoney(totalMant)}</div><div class="stat-sub">${mants.length} registro(s)</div></div>
+        <div class="stat-card blue"><div class="stat-label">Otros Gastos</div><div class="stat-val" style="font-size:15px">${fmtMoney(totalGas)}</div><div class="stat-sub">${gastos.length} registro(s)</div></div>
+        <div class="stat-card purple"><div class="stat-label">Mano de Obra</div><div class="stat-val" style="font-size:15px">${fmtMoney(mants.reduce((a,m)=>a+(m.manoObra||0),0))}</div></div>
+      </div>
+      ${mants.length?`<div style="font-size:12px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Mantenimientos</div>
+      <div class="tbl-wrap" style="margin-bottom:14px"><table>
+        <thead><tr><th>Fecha</th><th>Tipo</th><th>Taller</th><th>Repuestos</th><th>Valor</th></tr></thead>
+        <tbody>${mants.map(m=>`<tr>
+          <td class="td-mono">${fmtDate(m.fecha)}</td>
+          <td>${m.tipo}</td><td style="font-size:11px">${tallerName(m.taller)}</td>
+          <td style="font-size:11px;color:var(--txt2)">${m.repuestos||'—'}</td>
+          <td class="td-mono">${fmtMoney(m.valor)}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>`:''}
+      ${gastos.length?`<div style="font-size:12px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Otros Gastos</div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Fecha</th><th>Categoría</th><th>Descripción</th><th>Valor</th></tr></thead>
+        <tbody>${gastos.map(g=>`<tr>
+          <td class="td-mono">${fmtDate(g.fecha)}</td>
+          <td>${g.cat}</td><td style="font-size:11px">${g.desc||'—'}</td>
+          <td class="td-mono">${fmtMoney(g.valor)}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>`:''}
+    </div>`;
+  });
+
+  if(!htmlVehs){
+    document.getElementById('reporteContainer').innerHTML=`<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-text">Sin registros para ${mesLabel}</div></div>`;
+    return;
+  }
+
+  document.getElementById('reporteContainer').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <div><div style="font-size:20px;font-weight:700">Reporte: ${mesLabel}</div></div>
+      <div style="text-align:right">
+        <div style="font-size:24px;font-weight:800;font-family:var(--mono);color:var(--amber)">${fmtMoney(totalGeneral)}</div>
+        <div style="font-size:12px;color:var(--txt3)">Gasto Total Flota</div>
+      </div>
+    </div>
+    ${htmlVehs}
+  `;
+}
+
+// ============================================================ HELPERS SELECTS ============================================================
+function poblarSelectVehiculos(id,withAll=false){
+  const sel=document.getElementById(id);if(!sel)return;
+  const cur=sel.value;
+  sel.innerHTML=(withAll?'<option value="">Todos los vehículos</option>':'<option value="">Seleccionar vehículo...</option>')+db.vehiculos.map(v=>`<option value="${v.id}">${v.placa}${v.nombre?' - '+v.nombre:''}</option>`).join('');
+  if(cur)sel.value=cur;
+}
+
+function poblarSelectTalleres(id){
+  const sel=document.getElementById(id);if(!sel)return;
+  const cur=sel.value;
+  sel.innerHTML='<option value="">Seleccionar taller...</option>'+db.talleres.map(t=>`<option value="${t.id}">${t.nombre}</option>`).join('');
+  if(cur)sel.value=cur;
+}
+
+// ============================================================ EXPORT CSV ============================================================
+function exportarCSV(tipo){
+  let csv='',filename='';
+  const sep=';';
+  if(tipo==='vehiculos'){
+    csv='Placa;Nombre;Marca;Modelo;Tipo;Color;Capacidad;Km;Estado;SOAT;Tecnicomecanica;Seguro;TarjetaOp;Conductor\n';
+    db.vehiculos.forEach(v=>{
+      const c=getCond(v.conductor);
+      csv+=`${v.placa}${sep}${v.nombre||''}${sep}${v.marca}${sep}${v.modelo}${sep}${v.tipo}${sep}${v.color}${sep}${v.capacidad}${sep}${v.km}${sep}${v.estado}${sep}${v.soat||''}${sep}${v.tecno||''}${sep}${v.seguro||''}${sep}${v.tarjeta||''}${sep}${c?c.nombre:''}\n`;
+    });filename='vehiculos_distrileco.csv';
+  } else if(tipo==='conductores'){
+    csv='Nombre;Cedula;Telefono;Licencia;VtoLicencia;VtoExamen;Vehiculo;Estado\n';
+    db.conductores.forEach(c=>{
+      const v=getVeh(c.veh);
+      csv+=`${c.nombre}${sep}${c.cedula}${sep}${c.tel}${sep}${c.lic}${sep}${c.licVto||''}${sep}${c.medico||''}${sep}${v?v.placa:''}${sep}${c.estado}\n`;
+    });filename='conductores_distrileco.csv';
+  } else if(tipo==='mantenimientos'){
+    csv='Fecha;Vehiculo;Tipo;Taller;Descripcion;Repuestos;Valor;ManoObra;Km;Estado;ProxFecha;ProxKm\n';
+    db.mantenimientos.forEach(m=>{
+      const v=getVeh(m.veh);const t=getTaller(m.taller);
+      csv+=`${m.fecha}${sep}${v?v.placa:''}${sep}${m.tipo}${sep}${t?t.nombre:''}${sep}"${m.desc}"${sep}"${m.repuestos||''}"${sep}${m.valor}${sep}${m.manoObra||0}${sep}${m.km||0}${sep}${m.estado}${sep}${m.proxFecha||''}${sep}${m.proxKm||0}\n`;
+    });filename='mantenimientos_distrileco.csv';
+  } else if(tipo==='gastos'){
+    csv='Fecha;Vehiculo;Categoria;Descripcion;Valor\n';
+    db.gastos.forEach(g=>{
+      const v=getVeh(g.veh);
+      csv+=`${g.fecha}${sep}${v?v.placa:''}${sep}${g.cat}${sep}"${g.desc||''}"${sep}${g.valor}\n`;
+    });filename='gastos_distrileco.csv';
+  } else {
+    // Reporte completo
+    csv='Tipo;Fecha;Vehiculo;Categoria;Descripcion;Valor\n';
+    db.mantenimientos.forEach(m=>{const v=getVeh(m.veh);csv+=`Mantenimiento${sep}${m.fecha}${sep}${v?v.placa:''}${sep}${m.tipo}${sep}"${m.desc}"${sep}${m.valor}\n`;});
+    db.gastos.forEach(g=>{const v=getVeh(g.veh);csv+=`Gasto${sep}${g.fecha}${sep}${v?v.placa:''}${sep}${g.cat}${sep}"${g.desc||''}"${sep}${g.valor}\n`;});
+    filename='reporte_completo_distrileco.csv';
+  }
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url);
+  hideModal('exportModal');
+}
+
+// ============================================================ INIT ============================================================
+loadDB();
+renderDashboard();
+</script>
+</body>
+</html>
