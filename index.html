@@ -178,7 +178,6 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 24p
 </head>
 <body>
 
-<!-- TOPBAR -->
 <div class="topbar">
   <div class="logo">
     <div class="logo-icon">🚛</div>
@@ -193,7 +192,6 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 24p
   </div>
 </div>
 
-<!-- NAV -->
 <div class="nav">
   <button class="nav-btn active" onclick="goPage('dashboard',this)">📊 Dashboard</button>
   <button class="nav-btn" onclick="goPage('vehiculos',this)">🚛 Vehículos</button>
@@ -207,7 +205,6 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 24p
 
 <div class="main">
 
-<!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
   <div class="stats-grid" id="statsGrid"></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
@@ -229,7 +226,6 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 24p
   </div>
 </div>
 
-<!-- VEHICULOS -->
 <div id="page-vehiculos" class="page">
   <div class="sec-header">
     <div><div class="sec-title">Flota de Vehículos</div><div class="sec-sub">Gestión completa de cada vehículo</div></div>
@@ -241,7 +237,6 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 24p
   <div class="veh-grid" id="vehGrid"></div>
 </div>
 
-<!-- CONDUCTORES -->
 <div id="page-conductores" class="page">
   <div class="sec-header">
     <div><div class="sec-title">Conductores</div></div>
@@ -253,7 +248,6 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 24p
   </table></div>
 </div>
 
-<!-- TALLERES -->
 <div id="page-talleres" class="page">
   <div class="sec-header">
     <div><div class="sec-title">Talleres</div></div>
@@ -265,7 +259,6 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 24p
   </table></div>
 </div>
 
-<!-- MANTENIMIENTOS -->
 <div id="page-mantenimientos" class="page">
   <div class="sec-header">
     <div><div class="sec-title">Registro de Mantenimientos</div></div>
@@ -287,7 +280,6 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 24p
   </table></div>
 </div>
 
-<!-- GASTOS -->
 <div id="page-gastos" class="page">
   <div class="sec-header">
     <div><div class="sec-title">Gastos Adicionales</div><div class="sec-sub">Combustible, peajes, multas, etc.</div></div>
@@ -299,13 +291,11 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 24p
   </table></div>
 </div>
 
-<!-- ALERTAS -->
 <div id="page-alertas" class="page">
   <div class="sec-header"><div class="sec-title">Centro de Alertas</div></div>
   <div id="alertasLista"></div>
 </div>
 
-<!-- REPORTES -->
 <div id="page-reportes" class="page">
   <div class="sec-header">
     <div>
@@ -324,17 +314,11 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 24p
   <div id="reporteContainer"></div>
 </div>
 
-</div><!-- /main -->
-
-<!-- FOOTER -->
-<footer>
+</div><footer>
   Hecha por VIBRAS POSITIVAS HM — Derechos de Autor Reservados © 2026<br>
   <span style="color:var(--txt3)">Soporte y Proyectos Digitales: +57 3117001234</span>
 </footer>
 
-<!-- ============================================================ MODALES ============================================================ -->
-
-<!-- MODAL VEHÍCULO -->
 <div class="modal-overlay" id="vehModal" style="display:none" onclick="if(event.target===this)hideModal('vehModal')">
 <div class="modal">
   <div class="modal-header">
@@ -375,7 +359,6 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 24p
   </div>
 </div></div>
 
-<!-- MODAL CONDUCTOR -->
 <div class="modal-overlay" id="condModal" style="display:none" onclick="if(event.target===this)hideModal('condModal')">
 <div class="modal">
   <div class="modal-header"><span class="modal-title">👤 Conductor</span><button class="btn-close" onclick="hideModal('condModal')">✕</button></div>
@@ -403,7 +386,6 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 24p
   </div>
 </div></div>
 
-<!-- MODAL TALLER -->
 <div class="modal-overlay" id="tallerModal" style="display:none" onclick="if(event.target===this)hideModal('tallerModal')">
 <div class="modal">
   <div class="modal-header"><span class="modal-title">🔧 Taller</span><button class="btn-close" onclick="hideModal('tallerModal')">✕</button></div>
@@ -427,7 +409,6 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 24p
   </div>
 </div></div>
 
-<!-- MODAL MANTENIMIENTO -->
 <div class="modal-overlay" id="mantModal" style="display:none" onclick="if(event.target===this)hideModal('mantModal')">
 <div class="modal">
   <div class="modal-header"><span class="modal-title">📋 Mantenimiento</span><button class="btn-close" onclick="forceHideAllModals()">✕</button></div>
@@ -468,7 +449,6 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 24p
   </div>
 </div></div>
 
-<!-- MODAL GASTO -->
 <div class="modal-overlay" id="gastoModal" style="display:none" onclick="if(event.target===this)hideModal('gastoModal')">
 <div class="modal">
   <div class="modal-header"><span class="modal-title">💰 Gasto Adicional</span><button class="btn-close" onclick="hideModal('gastoModal')">✕</button></div>
@@ -494,14 +474,12 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 24p
   </div>
 </div></div>
 
-<!-- MODAL DETALLE VEHICULO -->
 <div class="modal-overlay" id="vehDetalleModal" style="display:none" onclick="if(event.target===this)hideModal('vehDetalleModal')">
 <div class="modal" style="max-width:800px">
   <div class="modal-header"><span class="modal-title" id="vehDetalleTitle">Detalle del Vehículo</span><button class="btn-close" onclick="hideModal('vehDetalleModal')">✕</button></div>
   <div class="modal-body" id="vehDetalleBody"></div>
 </div></div>
 
-<!-- MODAL DATA & EXPORT (RESPALDO INTEGRADO AQUÍ) -->
 <div class="modal-overlay" id="exportModal" style="display:none" onclick="if(event.target===this)hideModal('exportModal')">
 <div class="modal" style="max-width:440px">
   <div class="modal-header"><span class="modal-title">📊 Gestión y Respaldo de Datos</span><button class="btn-close" onclick="hideModal('exportModal')">✕</button></div>
@@ -516,11 +494,11 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 24p
     </div>
     
     <hr class="divider">
-    <p style="color:var(--txt2);font-size:13px;margin-bottom:14px;font-weight:600">Copias de Seguridad del Sistema (Completo):</p>
+    <p style="color:var(--txt2);font-size:13px;margin-bottom:14px;font-weight:600">Copias de Seguridad (Optimizado Celulares):</p>
     <div style="display:flex;flex-direction:column;gap:8px">
-      <button class="btn btn-green" style="justify-content:flex-start; width:100%" onclick="crearBackupSistema()">📦 Crear Copia de Seguridad (JSON)</button>
-      <button class="btn btn-orange" style="justify-content:flex-start; width:100%" onclick="document.getElementById('fileBackupInput').click()">📥 Restaurar Copia de Seguridad</button>
-      <input type="file" id="fileBackupInput" accept=".json" style="display:none" onchange="restaurarBackupSistema(event)">
+      <button class="btn btn-green" style="justify-content:flex-start; width:100%" onclick="crearBackupSistemaCSV()">📦 Crear Copia de Seguridad (Excel / CSV)</button>
+      <button class="btn btn-orange" style="justify-content:flex-start; width:100%" onclick="document.getElementById('fileBackupInput').click()">📥 Restaurar Copia de Seguridad desde CSV</button>
+      <input type="file" id="fileBackupInput" accept=".csv" style="display:none" onchange="restaurarBackupSistemaCSV(event)">
     </div>
   </div>
 </div></div>
@@ -544,7 +522,6 @@ function saveDB(){localStorage.setItem(DB_KEY,JSON.stringify(db));}
 function newId(){return Date.now().toString(36)+Math.random().toString(36).substr(2,4);}
 
 function seedDemo(){
-  const vids=['v1','v2','v3'];
   db.vehiculos=[
     {id:'v1',placa:'DKC473',nombre:'El Toro',marca:'Kenworth',modelo:2018,tipo:'Camión',color:'Blanco',capacidad:8,km:145200,kmAceite:148000,soat:'2025-09-15',tecno:'2025-11-20',seguro:'2025-12-01',tarjeta:'2026-03-10',conductor:'c1',estado:'Activo',obs:''},
     {id:'v2',placa:'RMT891',nombre:'El Jaguar',marca:'International',modelo:2020,tipo:'Camión',color:'Rojo',capacidad:10,km:98750,kmAceite:102000,soat:'2025-08-01',tecno:'2026-02-14',seguro:'2025-07-30',tarjeta:'2025-10-05',conductor:'c2',estado:'Activo',obs:''},
@@ -581,45 +558,118 @@ function seedDemo(){
   saveDB();
 }
 
-// ============================================================ BACKUP & RESTORE SYSTEMS ============================================================
-function crearBackupSistema(){
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
-  const downloadAnchor = document.createElement('a');
-  const fechaHoy = new Date().toISOString().split('T')[0];
-  downloadAnchor.setAttribute("href", dataStr);
-  downloadAnchor.setAttribute("download", `backup_flota_distrileco_${fechaHoy}.json`);
-  document.body.appendChild(downloadAnchor);
-  downloadAnchor.click();
-  downloadAnchor.remove();
+// ============================================================ BACKUP & RESTORE COMPATIBLE CON EXCEL / CELULARES ============================================================
+function crearBackupSistemaCSV(){
+  let csv = "sep=;\n"; // Le dice a Excel móvil que use punto y coma directamente
+  const sep = ";";
+
+  // Módulo Vehículos
+  csv += "[TABLA:VEHICULOS]\n";
+  csv += "id;placa;nombre;marca;modelo;tipo;color;capacidad;km;kmAceite;soat;tecno;seguro;tarjeta;conductor;estado;obs\n";
+  db.vehiculos.forEach(v => {
+    csv += `${v.id}${sep}${v.placa}${sep}${v.nombre||''}${sep}${v.marca}${sep}${v.modelo}${sep}${v.tipo}${sep}${v.color}${sep}${v.capacidad}${sep}${v.km}${sep}${v.kmAceite}${sep}${v.soat||''}${sep}${v.tecno||''}${sep}${v.seguro||''}${sep}${v.tarjeta||''}${sep}${v.conductor||''}${sep}${v.estado}${sep}${v.obs||''}\n`;
+  });
+
+  // Módulo Conductores
+  csv += "[TABLA:CONDUCTORES]\n";
+  csv += "id;nombre;cedula;tel;dir;lic;licVto;medico;veh;estado;obs\n";
+  db.conductores.forEach(c => {
+    csv += `${c.id}${sep}${c.nombre}${sep}${c.cedula}${sep}${c.tel}${sep}${c.dir||''}${sep}${c.lic}${sep}${c.licVto||''}${sep}${c.medico||''}${sep}${c.veh||''}${sep}${c.estado}${sep}${c.obs||''}\n`;
+  });
+
+  // Módulo Talleres
+  csv += "[TABLA:TALLERES]\n";
+  csv += "id;nombre;tipo;tel;dir;contacto;cal;servicios;obs\n";
+  db.talleres.forEach(t => {
+    csv += `${t.id}${sep}${t.nombre}${sep}${t.tipo}${sep}${t.tel}${sep}${t.dir}${sep}${t.contacto||''}${sep}${t.cal}${sep}${t.servicios||''}${sep}${t.obs||''}\n`;
+  });
+
+  // Módulo Mantenimientos
+  csv += "[TABLA:MANTENIMIENTOS]\n";
+  csv += "id;veh;fecha;tipo;taller;km;valor;manoObra;estado;desc;repuestos;proxFecha;proxKm;obs\n";
+  db.mantenimientos.forEach(m => {
+    csv += `${m.id}${sep}${m.veh}${sep}${m.fecha}${sep}${m.tipo}${sep}${m.taller||''}${sep}${m.km}${sep}${m.valor}${sep}${m.manoObra}${sep}${m.estado}${sep}${m.desc}${sep}${m.repuestos||''}${sep}${m.proxFecha||''}${sep}${m.proxKm}${sep}${m.obs||''}\n`;
+  });
+
+  // Módulo Gastos
+  csv += "[TABLA:GASTOS]\n";
+  csv += "id;veh;fecha;cat;valor;desc\n";
+  db.gastos.forEach(g => {
+    csv += `${g.id}${sep}${g.veh}${sep}${g.fecha}${sep}${g.cat}${sep}${g.valor}${sep}${g.desc||''}\n`;
+  });
+
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const hoy = new Date().toISOString().split('T')[0];
+  a.href = url;
+  a.download = `respaldo_completo_flota_${hoy}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
   hideModal('exportModal');
 }
 
-function restaurarBackupSistema(event){
-  const archivo = event.target.files[0];
-  if(!archivo) return;
-  
-  const lector = new FileReader();
-  lector.onload = function(e) {
-    try {
-      const datosParseados = JSON.parse(e.target.result);
-      if(datosParseados.vehiculos && datosParseados.conductores && datosParseados.mantenimientos && datosParseados.gastos){
-        db = datosParseados;
-        saveDB();
-        alert('Copia de seguridad restaurada correctamente con éxito.');
-        hideModal('exportModal');
-        // Recargar la vista activa actual
-        const activeNavBtn = document.querySelector('.nav-btn.active');
-        if(activeNavBtn) activeNavBtn.click();
-        else renderDashboard();
-      } else {
-        alert('Error: El archivo JSON seleccionado no tiene la estructura válida de la aplicación.');
+function restaurarBackupSistemaCSV(event){
+  const file = event.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    const lines = text.split(/\r?\n/);
+    
+    let nuevoDb = { vehiculos: [], conductores: [], talleres: [], mantenimientos: [], gastos: [] };
+    let tablaActual = "";
+    let headers = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i].trim();
+      if (!line || line.startsWith("sep=")) continue;
+
+      if (line.startsWith("[TABLA:")) {
+        tablaActual = line.replace("[TABLA:", "").replace("]", "");
+        i++; // Saltar la siguiente línea que contiene los encabezados
+        if (lines[i]) headers = lines[i].trim().split(";");
+        continue;
       }
-    } catch (err) {
-      alert('Error crítico al leer el archivo de respaldo. Asegúrese que sea un archivo comprimido .json válido.');
+
+      let tokens = line.split(";");
+      if (tokens.length < 2) continue;
+
+      let rowObj = {};
+      headers.forEach((h, idx) => {
+        let val = tokens[idx] || "";
+        if (h === "modelo" || h === "km" || h === "kmAceite" || h === "cal" || h === "valor" || h === "manoObra" || h === "proxKm") {
+          rowObj[h] = parseInt(val) || 0;
+        } else if (h === "capacidad") {
+          rowObj[h] = parseFloat(val) || 0;
+        } else {
+          rowObj[h] = val;
+        }
+      });
+
+      if (tablaActual === "VEHICULOS") nuevoDb.vehiculos.push(rowObj);
+      if (tablaActual === "CONDUCTORES") nuevoDb.conductores.push(rowObj);
+      if (tablaActual === "TALLERES") nuevoDb.talleres.push(rowObj);
+      if (tablaActual === "MANTENIMIENTOS") nuevoDb.mantenimientos.push(rowObj);
+      if (tablaActual === "GASTOS") nuevoDb.gastos.push(rowObj);
+    }
+
+    if (nuevoDb.vehiculos.length || nuevoDb.conductores.length || nuevoDb.mantenimientos.length) {
+      db = nuevoDb;
+      saveDB();
+      alert('Respaldo de datos del CSV importado correctamente al almacenamiento móvil.');
+      hideModal('exportModal');
+      const btnActivo = document.querySelector('.nav-btn.active');
+      if (btnActivo) btnActivo.click(); else renderDashboard();
+    } else {
+      alert('Error: La estructura interna del archivo no coincide con las tablas del sistema de flota.');
     }
   };
-  lector.readAsText(archivo);
-  event.target.value = ''; // Limpiar input para re-ejecuciones
+
+  reader.readAsText(file, "UTF-8");
+  event.target.value = '';
 }
 
 // ============================================================ HELPERS ============================================================
@@ -688,12 +738,10 @@ function renderDashboard(){
   const label=hoy.toLocaleDateString('es-CO',{month:'long',year:'numeric'});
   document.getElementById('mesActualLabel').textContent=label;
 
-  // Stats
   const totalVeh=db.vehiculos.length;
   const activos=db.vehiculos.filter(v=>v.estado==='Activo').length;
   const enTaller=db.vehiculos.filter(v=>v.estado==='En Taller').length;
 
-  // Gasto mes actual
   const gastoMantMes=db.mantenimientos.filter(m=>{
     if(!m.fecha)return false;
     const d=new Date(m.fecha);const mes=(d.getFullYear()*100)+(d.getMonth()+1);
@@ -706,7 +754,6 @@ function renderDashboard(){
   }).reduce((a,g)=>a+(g.valor||0),0);
   const gastoTotal=gastoMantMes+gastoAdMes;
 
-  // Alertas
   const alertas=calcAlertas();
   const alertasUrgentes=alertas.filter(a=>a.level==='red').length;
   document.getElementById('alertCount').textContent=alertasUrgentes;
@@ -721,7 +768,6 @@ function renderDashboard(){
     <div class="stat-card"><div class="stat-label">Conductores Activos</div><div class="stat-val">${db.conductores.filter(c=>c.estado==='Activo').length}</div><div class="stat-sub">De ${db.conductores.length} registrados</div></div>
   `;
 
-  // Chart gastos por vehículo
   const gastosPorVeh={};
   db.vehiculos.forEach(v=>gastosPorVeh[v.id]=0);
   [...db.mantenimientos,...db.gastos].forEach(r=>{
@@ -745,7 +791,6 @@ function renderDashboard(){
   if(!chartHtml)chartHtml='<div class="empty-state"><div class="empty-icon">📊</div><div>Sin datos este mes</div></div>';
   document.getElementById('chartGastosVeh').innerHTML=chartHtml||'<div style="color:var(--txt3);font-size:13px;padding:20px 0">Sin datos este mes</div>';
 
-  // Alertas widget
   const urg=alertas.filter(a=>a.level==='red').slice(0,5);
   const warn=alertas.filter(a=>a.level==='amber').slice(0,3);
   const topAlertas=[...urg,...warn].slice(0,5);
@@ -759,7 +804,6 @@ function renderDashboard(){
       </div>`).join('');
   }
 
-  // Últimos mantenimientos
   const ultMant=[...db.mantenimientos].sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,6);
   document.getElementById('tbUltMant').innerHTML=ultMant.length?ultMant.map(m=>{
     const ec=m.estado==='Completado'?'badge-green':m.estado==='En Proceso'?'badge-amber':'badge-blue';
@@ -988,7 +1032,7 @@ function verDetalleVeh(id){
         <td>${tallerName(m.taller)}</td>
         <td class="td-mono">${fmtMoney(m.valor)}</td>
         <td><span class="badge badge-${m.estado==='Completado'?'green':m.estado==='En Proceso'?'amber':'blue'}">${m.estado}</span></td>
-      </tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:var(--txt3);padding:20px">Sin mantenimientos</td></tr>'}</tbody>
+      </tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:var(--txt3);padding:30px">Sin mantenimientos</td></tr>'}</tbody>
     </table></div>
   `;
   showModal('vehDetalleModal');
@@ -1080,7 +1124,6 @@ function resetTallerForm(){
   document.getElementById('tTipo').value='Mecánico';document.getElementById('tCal').value=3;
 }
 
-// Ensure utility modal closures work smoothly
 function forceHideAllModals(){
   document.querySelectorAll('.modal-overlay').forEach(mo => mo.style.display = 'none');
 }
@@ -1347,7 +1390,6 @@ function poblarSelectVehiculos(id,withAll=false){
   if(cur)sel.value=cur;
 }
 
-// Populate workshop selectors smoothly
 function poblarSelectTalleres(id){
   const sel=document.getElementById(id);if(!sel)return;
   const cur=sel.value;
